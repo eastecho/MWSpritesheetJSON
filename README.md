@@ -5,7 +5,7 @@ This is the exporter for TexturePacker to generate simple spritesheet in JSON fo
 
 ##Installation
 
-Put this directory into the **exporters** directory of TexturePacker application.
+Put **MotionWalk** directory into the **exporters** directory of TexturePacker application.
 
 ##Usage
 
