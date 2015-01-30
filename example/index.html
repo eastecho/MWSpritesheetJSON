@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>MotionWalk JS Spritesheet Demo</title>
+    <style>
+        body {
+            margin: 0;
+            color: #eeeeee;
+            background-color: #555555;
+            font-size: 14px;
+            font-family: Arial, "Times New Roman", Times, serif;
+        }
+
+        a {
+            display: inline-block;
+            padding: 4px 10px;
+            margin: 12px 6px;
+            color: #555555;
+            background-color: #eeeeee;
+            text-decoration: none;
+        }
+
+        a:hover {
+            background-color: #333333;
+            color: #eeeeee;
+        }
+
+        #mw-sprite {
+            position: absolute;
+        }
+
+        #mw-holder {
+            position: inherit;
+            margin: 0;
+            top: 0;
+            left: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="controls">
+        <a id="scale1" href="javascript:void(0)">1x Scale</a>
+        <a id="scale2" href="javascript:void(0)">2x Scale</a>
+        <a id="scale3" href="javascript:void(0)">3x Scale</a>
+        <input type="checkbox" id="show" /> Show bounding box
+    </div>
+    <div id="mw-sprite">
+        <div id="mw-holder"></div>
+    </div>
+    <script src="http://apps.bdimg.com/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script>
+        var spritesheet = 'seq.json';
+        var debug = true;
+        var data;
+        var currentFrame;
+        var totalFrames = 19;
+        var intervalID;
+
+        $(document).ready(function() {
+            run();
+        });
+
+        var run = function() {
+            // load json file
+            $.getJSON(spritesheet)
+                .done(function(jsonData) {
+                    if (debug) {
+                        console.log('Spritesheet file:' + spritesheet + ' loaded successfully.');
+                        data = jsonData;
+                        prepareAnimation();
+                    }
+                })
+                .fail(function() {
+                    console.log('Spritesheet file:' + spritesheet + ' load failed.');
+                });
+            // scale controller
+            $('.controls > a')
+                .css('border-radius', '5px')
+                .click(function(){
+                    $('#mw-sprite').css('transform', 'scale(' + $(this).attr('id').substr(5) + ')');
+                });
+            // set transform anchor point
+            $('#mw-sprite').css('transform-origin', 'left top');
+            // show/hide bounding box to see clearly
+            $('#show').click(function(){
+                if ($(this).prop('checked')) {
+                    $('#mw-sprite').css('border', '#ffff00 1px solid');
+                    $('#mw-holder').css('border', '#ff0000 1px solid');
+                } else {
+                    $('#mw-sprite').css('border', '');
+                    $('#mw-holder').css('border', '');
+                }
+            });
+        };
+
+        var prepareAnimation = function() {
+            $('#mw-holder').css('background-image', 'url(' + data.file + ')');
+            currentFrame = 0;
+            startAnimation();
+        };
+
+        var startAnimation = function() {
+            intervalID = setInterval(function(){
+
+                currentFrame = (currentFrame == totalFrames) ? 1 : currentFrame+1;
+
+                var obj = data.frames['frame-' + currentFrame];
+                $('#mw-sprite').css({
+                    'width' : obj.sourceW,
+                    'height': obj.sourceH
+                });
+                $('#mw-holder').css({
+                    'left'  : obj.offX,
+                    'top'   : obj.offY,
+                    'width' : obj.w,
+                    'height': obj.h,
+                    'background-position'   : -obj.x + 'px ' + (-obj.y) + 'px'
+                });
+            }, 60)
+        };
+    </script>
+</body>
+</html>
